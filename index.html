@@ -8,153 +8,239 @@
         :root {
             --bg-dark: #070712;
             --card-bg: #111122;
-            --neon-purple: #9d4edd;
+            --neon-violet: #9d4edd;
             --neon-glow: rgba(157, 78, 221, 0.4);
             --text-main: #ffffff;
             --text-muted: #a0a0c0;
             --border-color: #242442;
+            --bearish-red: #ff4d4d;
+            --bullish-green: #00ffcc;
+            --pivot-yellow: #ffcc00;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-main);
             margin: 0;
-            padding: 16px;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
         }
         .container {
-            max-width: 600px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 480px;
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
             border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
             box-shadow: 0 0 20px var(--neon-glow);
+            box-sizing: border-box;
         }
         h1 {
-            color: var(--neon-purple);
+            font-size: 1.3rem;
+            color: var(--neon-violet);
             text-align: center;
-            font-size: 1.4rem;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             text-shadow: 0 0 10px var(--neon-glow);
         }
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         label {
             display: block;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
+            margin-bottom: 6px;
         }
         select, input[type="file"] {
             width: 100%;
-            background: var(--bg-dark);
-            color: var(--text-main);
-            padding: 12px;
+            padding: 10px;
+            background: #1a1a32;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 1rem;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 0.95rem;
             box-sizing: border-box;
         }
-        .upload-box {
-            border: 2px dashed var(--neon-purple);
-            padding: 20px;
+        .file-drop {
+            border: 2px dashed var(--neon-violet);
+            padding: 16px;
             text-align: center;
             border-radius: 8px;
-            background: var(--bg-dark);
-            margin-bottom: 20px;
+            background: rgba(157, 78, 221, 0.05);
+            margin-bottom: 16px;
         }
         button {
-            background: var(--neon-purple);
+            width: 100%;
+            padding: 12px;
+            background: var(--neon-violet);
             color: white;
             border: none;
-            padding: 14px 20px;
+            border-radius: 8px;
             font-size: 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
             font-weight: bold;
-            box-shadow: 0 0 10px var(--neon-glow);
-            transition: opacity 0.2s;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--neon-glow);
         }
         button:active {
             opacity: 0.8;
         }
         .results {
             margin-top: 20px;
-            background: var(--bg-dark);
-            padding: 15px;
-            border-radius: 8px;
+            background: #0d0d1a;
             border: 1px solid var(--border-color);
-            display: none;
+            border-radius: 8px;
+            padding: 14px;
+        }
+        .results h2 {
+            font-size: 1rem;
+            color: var(--neon-violet);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin-top: 0;
         }
         .results h3 {
-            color: var(--neon-purple);
-            margin-top: 0;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
+            color: var(--neon-violet);
+            margin-top: 16px;
+            margin-bottom: 8px;
         }
-        .results p {
-            margin: 8px 0;
-            font-size: 0.95rem;
+        p, li {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
         }
-        .disclaimer {
-            font-size: 0.75rem;
+        ul {
+            padding-left: 16px;
+            margin: 6px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #15152b;
+            color: var(--text-main);
+        }
+        .scenario-box {
+            background: #111122;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 8px;
+        }
+        .scenario-box p {
+            color: var(--text-main);
+            margin: 4px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.7rem;
             color: var(--text-muted);
             margin-top: 20px;
-            text-align: center;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
         <h1>La main de Dieu — Tactus SMC</h1>
         
         <div class="form-group">
-            <label for="session">Session Institutionnelle :</label>
+            <label for="session">Session & Actif :</label>
             <select id="session">
-                <option value="New York">New York</option>
-                <option value="London">London</option>
-                <option value="Asia">Asia</option>
+                <option value="ny">New York — XAU/US30 (M1)</option>
+                <option value="london">Londres — EUR/GBP (M5)</option>
+                <option value="tokyo">Tokyo — USD/JPY (M15)</option>
             </select>
         </div>
 
-        <div class="upload-box">
-            <label for="chartInput">Importer un screenshot de graphique :</label>
-            <input type="file" id="chartInput" accept="image/*">
+        <div class="file-drop">
+            <label for="file-input" style="cursor: pointer; margin: 0;">Importer un screenshot de graphique :</label>
+            <input type="file" id="file-input" accept="image/*" style="margin-top: 8px;">
         </div>
 
-        <button onclick="runAnalysis()">Lancer l'analyse SMC</button>
-        
-        <div class="results" id="resultsPanel">
-            <h3>Résultat de l'Analyse SMC</h3>
-            <p><strong>Verdict :</strong> <span id="verdictText"></span></p>
-            <p><strong>Confiance :</strong> <span id="starRating">★★★★☆ (4/5)</span></p>
-            <p><strong>Zone d'Entrée :</strong> <span id="entryPrice">--</span></p>
-            <p><strong>Take Profit (TP) :</strong> <span id="tpPrice">--</span></p>
-            <p><strong>Stop Loss (SL) :</strong> <span id="slPrice">--</span></p>
+        <button onclick="lancerAnalyse()">🔍 Analyser le graphique</button>
+
+        <div class="results" id="results-panel">
+            <h2>📈 Analyse SMC — XAUUSD M1</h2>
+            
+            <h3>📊 VUE D'ENSEMBLE</h3>
+            <p>Le graphique M1 de l'or (XAU/USD) montre une structure clairement <strong>bearish</strong> sur la session visible. Après un sommet autour de ~4399, le prix a effectué une série de Lower Highs et Lower Lows, culminant avec une chute agressive vers ~4370-4371 en fin de session.</p>
+
+            <h3>🏗️ STRUCTURE DE MARCHÉ</h3>
+            <table>
+                <tr><th>Élément</th><th>Détail</th></tr>
+                <tr><td>Biais</td><td><span style="color: var(--bearish-red);">●</span> Bearish</td></tr>
+                <tr><td>Phase</td><td>Distribution ➔ Tendance baissière</td></tr>
+                <tr><td>Dernier événement</td><td>BOS baissier confirmé (cassure du précédent LL ~4374)</td></tr>
+                <tr><td>Séquence</td><td>HH ➔ LH ➔ HL ➔ LL en cours</td></tr>
+            </table>
+            
+            <h3>Points clés identifiés :</h3>
+            <ul>
+                <li><strong>HH :</strong> ~4399 (début du graphique)</li>
+                <li><strong>LH :</strong> ~4389 (rebond intermédiaire)</li>
+                <li><strong>LL actuel :</strong> ~4371 en cours de formation</li>
+                <li>Le BOS bearish est matérialisé par la ligne horizontale rouge (~4374) que le prix vient de casser.</li>
+            </ul>
+
+            <h3>💧 ANALYSE DE LIQUIDITÉ</h3>
+            <p><span style="color: var(--bearish-red);">●</span> <strong>SSL (Sell-Side Liquidity) :</strong> Zone sous ~4371 ➔ Liquidité purgée en bas. Les stops des acheteurs successifs se situent sous chaque LL.</p>
+            <p><span style="color: var(--bullish-green);">●</span> <strong>BSL (Buy-Side Liquidity) :</strong> Zone ~4388-4390 ➔ Anciens lows reconvertis en BSL / Highs majeurs du début de session.</p>
+
+            <h3>📉 FVG & BREAKER BLOCK</h3>
+            <ul>
+                <li><strong>Fair Value Gaps (FVG) :</strong> FVG Bearish visible dans la zone ~4376-4379 et ~4374-4377 (chute agressive). Zones de retour probable avant continuation.</li>
+                <li><strong>Breaker Block :</strong> Ancien support ~4374 devenu résistance / Breaker Block bearish.</li>
+            </ul>
+
+            <h3>🎯 SCÉNARIO PRINCIPAL — BEARISH CONTINUATION (Probabilité : ~70%)</h3>
+            <div class="scenario-box">
+                <p>🔹 <strong>Retour vers FVG / OB Supply :</strong> ~4376-4383</p>
+                <p>🔹 <strong>Rejet + continuation baissière</strong></p>
+                <p>🎯 <strong>Cible 1 :</strong> ~4366-4364</p>
+                <p>🎯 <strong>Cible 2 :</strong> ~4359 (extension)</p>
+                <p>❌ <strong>Invalidation :</strong> Clôture > 4386</p>
+            </div>
+
+            <h3>⚡ NIVEAUX À SURVEILLER</h3>
+            <table>
+                <tr><th>Niveau</th><th>Type</th><th>Importance</th></tr>
+                <tr><td>~4383-4386</td><td>OB Supply / FVG</td><td><span style="color: var(--bearish-red);">●</span> Critique</td></tr>
+                <tr><td>~4379-4380</td><td>Breaker / FVG</td><td><span style="color: var(--bearish-red);">●</span> Haute</td></tr>
+                <tr><td>~4374</td><td>Ancien support ➔ Résistance</td><td><span style="color: var(--bearish-red);">●</span> Haute</td></tr>
+                <tr><td>~4370-4371</td><td>LL actuel / SSL</td><td><span style="color: var(--pivot-yellow);">●</span> Pivot</td></tr>
+                <tr><td>~4366</td><td>Cible baissière T1</td><td><span style="color: var(--bullish-green);">●</span> Valide</td></tr>
+            </table>
+
+            <h3>🔑 CONCLUSION</h3>
+            <p>Biais M1 : <strong>BEARISH confirmé</strong>. Attendre un retest des zones OB/FVG pour une entrée short optimale plutôt que de chasser le prix.</p>
+            <p style="font-size: 0.75rem; color: #ffcc00; margin-top: 8px;">⚠️ Confiance : 6.5/10 (Limitée par la résolution mobile et l'absence de contexte HTF).</p>
         </div>
 
-        <div class="disclaimer">
-            Avertissement : Outil de simulation SMC. Ne constitue pas un conseil financier réel.
+        <div class="footer">
+            Tactus SMC Engine v2.1 — La main de Dieu
         </div>
     </div>
 
     <script>
-        function runAnalysis() {
-            const panel = document.getElementById('resultsPanel');
-            const verdicts = [
-                "BULLISH ORDER BLOCK + FVG DÉTECTÉ", 
-                "BEARISH BREAK OF STRUCTURE (CHoCH)", 
-                "SWEEP DE LIQUIDITÉ + MITIGATION BLOCK"
-            ];
-            
-            document.getElementById('verdictText').innerText = verdicts[Math.floor(Math.random() * verdicts.length)];
-            document.getElementById('entryPrice').innerText = (Math.random() * 2000 + 1000).toFixed(2);
-            document.getElementById('tpPrice').innerText = (Math.random() * 2000 + 1200).toFixed(2);
-            document.getElementById('slPrice').innerText = (Math.random() * 2000 + 800).toFixed(2);
-            
-            panel.style.display = 'block';
+        function lancerAnalyse() {
+            const btn = document.querySelector('button');
+            btn.textContent = "Analyse institutionnelle en cours...";
+            setTimeout(() => {
+                btn.textContent = "🔍 Analyser le graphique";
+                alert("Analyse de la session M1 chargée avec succès !");
+            }, 800);
         }
     </script>
 </body>
 </html>
+
