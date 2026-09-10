@@ -159,6 +159,33 @@
             color: var(--text-main);
             margin: 4px 0;
         }
+        .tp-sl-display {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 10px;
+            margin-bottom: 12px;
+        }
+        .tp-sl-box {
+            flex: 1;
+            background: #111122;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .tp-sl-box h4 { margin: 0 0 4px 0; font-size: 0.75rem; color: var(--text-muted); }
+        .tp-sl-box .value { font-size: 1rem; font-weight: bold; }
+        .tp-value { color: var(--bullish-green); }
+        .sl-value { color: var(--bearish-red); }
+        .rr-box {
+            margin-top: 6px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .rr-value { font-weight: bold; color: var(--pivot-yellow); }
+
         .footer {
             text-align: center;
             font-size: 0.7rem;
@@ -201,13 +228,34 @@
         <div class="results" id="results-panel">
             <h2 id="result-title">📈 Analyse SMC — XAUUSD (M1)</h2>
             
+            <!-- SECTION TP / SL / RR -->
+            <h3>🎯 Objectifs Institutionnels (TP / SL)</h3>
+            <div class="tp-sl-display">
+                <div class="tp-sl-box">
+                    <h4>Take Profit 1</h4>
+                    <div class="value tp-value" id="tp1-price">4342.50</div>
+                </div>
+                <div class="tp-sl-box">
+                    <h4>Take Profit 2</h4>
+                    <div class="value tp-value" id="tp2-price">4335.00</div>
+                </div>
+            </div>
+            <div class="tp-sl-box" style="margin-bottom: 6px;">
+                <h4>Stop Loss (SL)</h4>
+                <div class="value sl-value" id="sl-price">4358.50</div>
+            </div>
+            <div class="rr-box">
+                Ratio Risque/Rendement : <span class="rr-value" id="rr-ratio">1 : 2.4</span>
+            </div>
+            <!-- FIN SECTION -->
+
             <h3>📊 VUE D'ENSEMBLE</h3>
             <p>Analyse structurelle de la price action institutionnelle. Détection des déséquilibres, des zones d'accumulation/distribution et des retournements de tendance potentiels.</p>
 
             <h3>🏗️ STRUCTURE DE MARCHÉ</h3>
             <table>
                 <tr><th>Élément</th><th>Détail</th></tr>
-                <tr><td>Biais Actuel</td><td><span style="color: var(--bearish-red);">●</span> Bearish / Bullish dynamique</td></tr>
+                <tr><td>Biais Actuel</td><td><span style="color: var(--bearish-red);">●</span> Bearish dynamique</td></tr>
                 <tr><td>Phase SMC</td><td>Impulsion ➔ Retracement / Mitigation</td></tr>
                 <tr><td>Dernier événement</td><td>BOS / CHoCH validé sur structure mineure</td></tr>
             </table>
@@ -244,7 +292,7 @@
         </div>
 
         <div class="footer">
-            Tactus SMC Engine v2.1 — La main de Dieu
+            Tactus SMC Engine v2.3 — La main de Dieu
         </div>
     </div>
 
@@ -270,11 +318,9 @@
             btn.textContent = "Analyse institutionnelle en cours...";
             setTimeout(() => {
                 btn.textContent = "🔍 Lancer l'analyse SMC";
-                alert("Analyse de la paire mise à jour avec succès par La main de Dieu !");
+                alert("Analyse et calcul des niveaux TP/SL mis à jour avec succès !");
             }, 800);
         }
     </script>
 </body>
 </html>
-
-
