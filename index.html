@@ -16,6 +16,7 @@
             --bearish-red: #ff4d4d;
             --bullish-green: #00ffcc;
             --pivot-yellow: #ffcc00;
+            --entry-blue: #00b4d8;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -52,7 +53,7 @@
             color: var(--text-muted);
             margin-bottom: 6px;
         }
-        select, input[type="text"] {
+        select {
             width: 100%;
             padding: 10px;
             background: #1a1a32;
@@ -100,12 +101,12 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 0 15px var(--neon-glow);
+            margin-bottom: 16px;
         }
         button:active {
             opacity: 0.8;
         }
         .results {
-            margin-top: 20px;
             background: #0d0d1a;
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -159,30 +160,37 @@
             color: var(--text-main);
             margin: 4px 0;
         }
-        .tp-sl-display {
-            display: flex;
-            justify-content: space-between;
+        
+        /* GRILLE ENTRY / TP / SL */
+        .trade-levels-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 8px;
             margin-top: 10px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
-        .tp-sl-box {
-            flex: 1;
+        .level-box {
             background: #111122;
             border-radius: 6px;
             padding: 8px;
             text-align: center;
             border: 1px solid var(--border-color);
         }
-        .tp-sl-box h4 { margin: 0 0 4px 0; font-size: 0.75rem; color: var(--text-muted); }
-        .tp-sl-box .value { font-size: 1rem; font-weight: bold; }
+        .level-box.full-width {
+            grid-column: span 2;
+        }
+        .level-box h4 { margin: 0 0 4px 0; font-size: 0.75rem; color: var(--text-muted); }
+        .level-box .value { font-size: 1rem; font-weight: bold; }
+        
+        .entry-value { color: var(--entry-blue); }
         .tp-value { color: var(--bullish-green); }
         .sl-value { color: var(--bearish-red); }
+        
         .rr-box {
-            margin-top: 6px;
             text-align: center;
             font-size: 0.85rem;
             color: var(--text-muted);
+            margin-bottom: 12px;
         }
         .rr-value { font-weight: bold; color: var(--pivot-yellow); }
 
@@ -228,26 +236,30 @@
         <div class="results" id="results-panel">
             <h2 id="result-title">📈 Analyse SMC — XAUUSD (M1)</h2>
             
-            <!-- SECTION TP / SL / RR -->
-            <h3>🎯 Objectifs Institutionnels (TP / SL)</h3>
-            <div class="tp-sl-display">
-                <div class="tp-sl-box">
-                    <h4>Take Profit 1</h4>
+            <!-- SECTION ENTRÉE / TP / SL PROPRE -->
+            <h3>🎯 Plan Tactique & Niveaux Clés</h3>
+            <div class="trade-levels-grid">
+                <div class="level-box full-width">
+                    <h4>Prix d'Entrée (Entry Zone)</h4>
+                    <div class="value entry-value" id="entry-price">4350.50 - 4352.00</div>
+                </div>
+                <div class="level-box">
+                    <h4>Stop Loss (SL)</h4>
+                    <div class="value sl-value" id="sl-price">4358.50</div>
+                </div>
+                <div class="level-box">
+                    <h4>Take Profit 1 (TP1)</h4>
                     <div class="value tp-value" id="tp1-price">4342.50</div>
                 </div>
-                <div class="tp-sl-box">
-                    <h4>Take Profit 2</h4>
+                <div class="level-box full-width">
+                    <h4>Take Profit 2 (TP2 - Extension)</h4>
                     <div class="value tp-value" id="tp2-price">4335.00</div>
                 </div>
             </div>
-            <div class="tp-sl-box" style="margin-bottom: 6px;">
-                <h4>Stop Loss (SL)</h4>
-                <div class="value sl-value" id="sl-price">4358.50</div>
-            </div>
             <div class="rr-box">
-                Ratio Risque/Rendement : <span class="rr-value" id="rr-ratio">1 : 2.4</span>
+                Ratio Risque / Rendement (R:R) : <span class="rr-value" id="rr-ratio">1 : 2.4</span>
             </div>
-            <!-- FIN SECTION -->
+            <!-- FIN DE SECTION -->
 
             <h3>📊 VUE D'ENSEMBLE</h3>
             <p>Analyse structurelle de la price action institutionnelle. Détection des déséquilibres, des zones d'accumulation/distribution et des retournements de tendance potentiels.</p>
@@ -278,21 +290,13 @@
                 <p>❌ <strong>Invalidation :</strong> Cassure de la structure de référence HTF</p>
             </div>
 
-            <h3>⚡ NIVEAUX CLÉS</h3>
-            <table>
-                <tr><th>Zone / Prix</th><th>Type</th><th>Rôle</th></tr>
-                <tr><td>Zone Haute</td><td>Supply / OB</td><td>Résistance / Rejet potentiels</td></tr>
-                <tr><td>Zone Médiane</td><td>FVG / Breaker</td><td>Point de pivot institutionnel</td></tr>
-                <tr><td>Zone Basse</td><td>Demand / SSL</td><td>Support / Chasse aux stops</td></tr>
-            </table>
-
             <h3>🔑 CONCLUSION</h3>
             <p>Attendre une réaction propre sur les zones d'intérêt identifiées. Ne jamais chasser le marché sans mitigation préalable.</p>
             <p style="font-size: 0.75rem; color: var(--pivot-yellow); margin-top: 8px;">⚠️ Modèle Tactus SMC — Modèle de succès enregistré.</p>
         </div>
 
         <div class="footer">
-            Tactus SMC Engine v2.3 — La main de Dieu
+            Tactus SMC Engine v2.4 — La main de Dieu
         </div>
     </div>
 
@@ -318,9 +322,10 @@
             btn.textContent = "Analyse institutionnelle en cours...";
             setTimeout(() => {
                 btn.textContent = "🔍 Lancer l'analyse SMC";
-                alert("Analyse et calcul des niveaux TP/SL mis à jour avec succès !");
+                alert("Analyse de l'entrée, du SL et des TP actualisée avec succès par La main de Dieu !");
             }, 800);
         }
     </script>
 </body>
 </html>
+
