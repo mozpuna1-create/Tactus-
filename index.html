@@ -13,14 +13,10 @@
             --text-main: #ffffff;
             --text-muted: #a0a0c0;
             --border-color: #242442;
-            --bearish-red: rgba(255, 77, 77, 0.35);
-            --bullish-green: rgba(0, 255, 204, 0.35);
-            --ob-color: rgba(157, 78, 221, 0.4);
-            --fvg-color: rgba(255, 170, 0, 0.35);
-            --bearish-border: #ff4d4d;
-            --bullish-border: #00ffcc;
-            --ob-border: #9d4edd;
-            --fvg-border: #ffaa00;
+            --bearish-red: rgba(235, 87, 87, 0.45);
+            --bullish-green: rgba(38, 166, 154, 0.35);
+            --bearish-border: #eb5757;
+            --bullish-border: #26a69a;
             --pivot-yellow: #ffcc00;
             --entry-blue: #00b4d8;
         }
@@ -86,7 +82,7 @@
             display: none;
         }
         
-        /* CONTENEUR DE L'IMAGE AVEC ZONES SMC INCRUSTÉES */
+        /* CONTENEUR DE L'IMAGE ET OUTILS DE POSITION LONG/SHORT STYLE TRADINGVIEW */
         .preview-container {
             position: relative;
             width: 100%;
@@ -103,32 +99,63 @@
             display: block;
         }
 
-        /* CADRES SUR L'IMAGE (SL, OB, FVG, TP) */
-        .trade-zone {
+        /* BLOCS DE POSITION (Style Long Tool TV) */
+        .trade-block {
             position: absolute;
-            left: 5%;
-            width: 90%;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 8px;
-            font-size: 0.7rem;
-            font-weight: bold;
+            left: 45%;
+            width: 50%;
             box-sizing: border-box;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.4s ease-in-out;
+            transition: opacity 0.5s ease-in-out;
+            font-size: 0.7rem;
+            font-weight: bold;
         }
-        .preview-container.analyzed .trade-zone {
+        .preview-container.analyzed .trade-block {
             opacity: 1;
         }
 
-        .zone-sl { top: 10%; height: 10%; background-color: var(--bearish-red); border: 1px solid var(--bearish-border); color: #ffcccc; }
-        .zone-ob { top: 23%; height: 12%; background-color: var(--ob-color); border: 1px solid var(--ob-border); color: #e0ccff; }
-        .zone-fvg { top: 38%; height: 10%; background-color: var(--fvg-color); border: 1px solid var(--fvg-border); color: #ffe6cc; }
-        .zone-tp1 { top: 55%; height: 12%; background-color: var(--bullish-green); border: 1px solid var(--bullish-border); color: #ccfffa; }
-        .zone-tp2 { top: 70%; height: 14%; background-color: var(--bullish-green); border: 1px solid var(--bullish-border); color: #ccfffa; }
+        /* Zone Profit Verte */
+        .block-profit {
+            top: 22%;
+            height: 40%;
+            background-color: var(--bullish-green);
+            border: 1px dashed var(--bullish-border);
+            border-bottom: none;
+        }
+        /* Zone Risque Rouge (SL) */
+        .block-loss {
+            top: 62%;
+            height: 10%;
+            background-color: var(--bearish-red);
+            border: 1px dashed var(--bearish-border);
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            color: #ffe6e6;
+            justify-content: space-between;
+        }
+        
+        /* Lignes de niveaux cibles (TP1, TP2, TP3, SL) */
+        .level-tag {
+            position: absolute;
+            right: 5%;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            z-index: 5;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .preview-container.analyzed .level-tag {
+            opacity: 1;
+        }
+        .tag-tp3 { top: 20%; background: var(--bullish-border); color: #000; }
+        .tag-tp2 { top: 38%; background: var(--bullish-border); color: #000; }
+        .tag-tp1 { top: 52%; background: var(--entry-blue); color: #fff; }
+        .tag-sl  { top: 64%; background: var(--bearish-border); color: #fff; }
 
         /* PANNEAU D'ANALYSE TEXTUELLE */
         .results {
@@ -181,7 +208,7 @@
         .level-box .value { font-size: 1rem; font-weight: bold; }
         
         .entry-value { color: var(--entry-blue); }
-        .tp-value { color: var(--bullish-green); }
+        .tp-value { color: var(--bullish-border); }
         .sl-value { color: var(--bearish-border); }
         
         .rr-box {
@@ -227,84 +254,75 @@
             </select>
         </div>
 
-        <!-- ZONE DE DÉPÔT : Dès qu'on lâche l'image, tout s'exécute -->
+        <!-- ZONE DE DÉPÔT AUTOMATIQUE -->
         <div class="file-drop" onclick="document.getElementById('file-input').click()">
             <span style="color: var(--text-main); font-weight: bold;" id="drop-text">🖼️ Glisser ou importer une photo</span>
-            <p style="margin: 4px 0 0 0; font-size: 0.8rem;">Analyse automatique instantanée (OB, FVG, SL, TP)</p>
+            <p style="margin: 4px 0 0 0; font-size: 0.8rem;">Analyse automatique des cibles Multi-TP</p>
             <input type="file" id="file-input" accept="image/*" onchange="analyserInstantane(event)">
         </div>
 
-        <!-- GRAPHIQUE AVEC ZONES INCRUSTÉES -->
+        <!-- GRAPHIQUE AVEC BLOCS DE POSITION LONG/SHORT ET MULTI-TP -->
         <div class="preview-container" id="preview-box">
             <img id="image-preview" src="" alt="Graphique analysé">
             
-            <div class="trade-zone zone-sl">
-                <span>🛑 STOP LOSS (SL)</span>
-                <span>4358.50</span>
+            <!-- Blocs visuels de position de trading -->
+            <div class="trade-block block-profit"></div>
+            <div class="trade-block block-loss">
+                <span>Stop Loss (SL)</span>
+                <span>4308.50</span>
             </div>
-            <div class="trade-zone zone-ob">
-                <span>📦 ORDER BLOCK (OB)</span>
-                <span>4352.00</span>
-            </div>
-            <div class="trade-zone zone-fvg">
-                <span>⚡ FAIR VALUE GAP (FVG)</span>
-                <span>4348.00</span>
-            </div>
-            <div class="trade-zone zone-tp1">
-                <span>🎯 TAKE PROFIT 1 (TP1)</span>
-                <span>4342.50</span>
-            </div>
-            <div class="trade-zone zone-tp2">
-                <span>🎯 TAKE PROFIT 2 (TP2)</span>
-                <span>4335.00</span>
-            </div>
+
+            <!-- Tags des niveaux cibles -->
+            <div class="level-tag tag-tp3">TP3: 4368.10</div>
+            <div class="level-tag tag-tp2">TP2: 4355.00</div>
+            <div class="level-tag tag-tp1">TP1: 4342.50</div>
+            <div class="level-tag tag-sl">SL: 4308.50</div>
         </div>
 
         <!-- RAPPORT D'ANALYSE ÉCRITE AUTOMATIQUE -->
         <div class="results" id="results-panel">
-            <h2>📈 Analyse SMC Automatisée</h2>
+            <h2>📈 Analyse Multi-TP Automatisée</h2>
             
-            <h3>🔍 Structure & Biais Institutionnel</h3>
+            <h3>🔍 Structure & Gestion des Gains</h3>
             <ul>
-                <li><strong>Structure Interne :</strong> Balayage de liquidité (Sweep) et impulsion validée.</li>
-                <li><strong>Order Flow :</strong> Présence d'un déséquilibre institutionnel net.</li>
-                <li><strong>Biais Actuel :</strong> Retour sur zone de rechargement (OB / FVG).</li>
+                <li><strong>Stratégie :</strong> Gestion de position fractionnée avec objectifs multiples.</li>
+                <li><strong>Zone de Profit :</strong> Couverture de la zone verte cumulative.</li>
+                <li><strong>Biais Actuel :</strong> Extension haussière validée vers les sommets institutionnels.</li>
             </ul>
 
             <h3>🎯 Plan Tactique & Niveaux Clés</h3>
             <div class="trade-levels-grid">
-                <div class="level-box full-width">
-                    <h4>Zone Order Block / Entrée (OB)</h4>
-                    <div class="value entry-value">4350.50 - 4352.00</div>
-                </div>
                 <div class="level-box">
                     <h4>Stop Loss (SL)</h4>
-                    <div class="value sl-value">4358.50</div>
+                    <div class="value sl-value">4308.50</div>
                 </div>
                 <div class="level-box">
                     <h4>Take Profit 1 (TP1)</h4>
-                    <div class="value tp-value">4342.50</div>
+                    <div class="value entry-value">4342.50</div>
                 </div>
-                <div class="level-box full-width">
-                    <h4>Take Profit 2 (TP2 - Extension)</h4>
-                    <div class="value tp-value">4335.00</div>
+                <div class="level-box">
+                    <h4>Take Profit 2 (TP2)</h4>
+                    <div class="value tp-value">4355.00</div>
+                </div>
+                <div class="level-box">
+                    <h4>Take Profit 3 (TP3)</h4>
+                    <div class="value tp-value">4368.10</div>
                 </div>
             </div>
             <div class="rr-box">
-                Ratio Risque / Rendement (R:R) : <span class="rr-value">1 : 2.7</span>
+                Ratio Risque / Rendement Global (R:R) : <span class="rr-value">1 : 3.8</span>
             </div>
 
-            <h3>💡 Scénarios & Exécution</h3>
+            <h3>💡 Exécution & Scénario</h3>
             <div class="scenario-box">
-                <p><strong>Scénario Principal :</strong> Rejet immédiat validé sur la zone violette (`OB`).</p>
-                <p><strong>Gestion :</strong> Sécurisation au TP1 (`4342.50`), extension maximale au TP2 (`4335.00`).</p>
+                <p><strong>Scénario Principal :</strong> Prise de profit partielle au TP1, sécurisation à break-even, et laisser courir l'excédent vers le TP2 et TP3.</p>
             </div>
 
             <p style="font-size: 0.75rem; color: var(--pivot-yellow); margin-top: 12px; text-align: center;">⚠️ Modèle Tactus SMC — Modèle de succès "La main de Dieu".</p>
         </div>
 
         <div class="footer">
-            Tactus SMC Engine v3.1 — La main de Dieu
+            Tactus SMC Engine v3.2 — La main de Dieu
         </div>
     </div>
 
@@ -315,20 +333,17 @@
 
             const reader = new FileReader();
             reader.onload = function(e){
-                // 1. Affiche l'image du graphique
                 document.getElementById('image-preview').src = e.target.result;
                 
-                // 2. Fait apparaître le conteneur d'image et le panneau de texte instantanément
                 const previewBox = document.getElementById('preview-box');
                 previewBox.style.display = 'block';
                 document.getElementById('results-panel').style.display = 'block';
                 
-                document.getElementById('drop-text').textContent = "🔄 Analyse en cours...";
+                document.getElementById('drop-text').textContent = "🔄 Analyse multi-TP en cours...";
 
-                // 3. Déclenche l'affichage des cadres colorés sur l'image et valide l'analyse
                 setTimeout(() => {
                     previewBox.classList.add('analyzed');
-                    document.getElementById('drop-text').textContent = "✅ Analyse SMC & Cartographie validées";
+                    document.getElementById('drop-text').textContent = "✅ Graphique & Multi-TP appliqués";
                 }, 300);
             };
             reader.readAsDataURL(file);
