@@ -1,367 +1,254 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La main de Dieu — Tactus SMC Pro</title>
-    <style>
-        :root {
-            --bg-dark: #030307;
-            --card-bg: #0b0b14;
-            --neon-violet: #9d4edd;
-            --neon-glow: rgba(157, 78, 221, 0.35);
-            --text-main: #ffffff;
-            --text-muted: #8b8ba7;
-            --border-color: #1a1a2e;
-            --success-green: #00e676;
-            --bearish-red: #ff1744;
-            --star-gold: #ffb703;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-        .container {
-            width: 100%;
-            max-width: 460px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 14px;
-            box-shadow: 0 0 30px var(--neon-glow);
-            box-sizing: border-box;
-        }
-        h1 {
-            font-size: 1.1rem;
-            color: #d8b4fe;
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-        }
-        .row-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        .field {
-            margin-bottom: 10px;
-        }
-        label {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-        select, input {
-            width: 100%;
-            background: #111122;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            padding: 9px;
-            font-size: 0.85rem;
-            box-sizing: border-box;
-            outline: none;
-        }
-        select:focus, input:focus {
-            border-color: var(--neon-violet);
-        }
-        .dropzone {
-            border: 2px dashed var(--neon-violet);
-            background: rgba(157, 78, 221, 0.03);
-            padding: 12px;
-            text-align: center;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-        input[type="file"] { display: none; }
-        
-        /* Conteneur de l'image avec le canvas visuel par-dessus */
-        .canvas-container {
-            display: none;
-            position: relative;
-            width: 100%;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--neon-violet);
-            background: #000;
-        }
-        .canvas-container img {
-            width: 100%;
-            display: block;
-            height: auto;
-        }
-        .canvas-container canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tactus Auto SMC</title>
+<style>
+  :root{
+    --bg: #0b0f14;
+    --panel: #121821;
+    --panel-2: #0e141c;
+    --line: #232c38;
+    --text: #e7ecf2;
+    --muted: #7c8a9c;
+    --bull: #37b874;
+    --bull-dim: rgba(55,184,116,0.16);
+    --bear: #d9534f;
+    --bear-dim: rgba(217,83,79,0.16);
+    --struct: #4fa3d1;
+    --amber: #c9974e;
+    --mono: "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; padding:14px; background:var(--bg); color:var(--text);
+    font-family:var(--sans); display:flex; justify-content:center;
+  }
+  .wrap{ width:100%; max-width:480px; }
+  .title{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; }
+  .title h1{ font-size:0.95rem; font-weight:600; margin:0; color:var(--text); }
+  .title span{ font-size:0.68rem; color:var(--muted); }
 
-        .btn-execute {
-            width: 100%;
-            background: linear-gradient(135deg, #7b2cbf, #9d4edd);
-            color: white;
-            border: none;
-            padding: 11px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
-            margin-bottom: 12px;
-        }
+  .controls{
+    display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;
+  }
+  select, button, input{
+    background:var(--panel); color:var(--text); border:1px solid var(--line);
+    border-radius:6px; padding:7px 9px; font-family:var(--mono); font-size:0.75rem;
+  }
+  select{ flex:1 1 auto; min-width:0; }
+  button{ cursor:pointer; }
+  button.primary{ background:var(--struct); border-color:var(--struct); color:#08131c; font-weight:600; }
+  button.toggle.on{ background:var(--bull-dim); border-color:var(--bull); color:var(--bull); }
 
-        .results-wrapper {
-            display: none;
-            background: #101020;
-            border: 1px solid var(--neon-violet);
-            border-radius: 12px;
-            padding: 12px;
-        }
-        .results-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-            margin-bottom: 10px;
-        }
-        .stars {
-            color: var(--star-gold);
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-        }
-        .badge-score {
-            background: rgba(0, 230, 118, 0.12);
-            color: var(--success-green);
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 0.72rem;
-            font-weight: bold;
-            border: 1px solid rgba(0, 230, 118, 0.3);
-        }
-        .metrics-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 6px;
-            margin-bottom: 10px;
-        }
-        .metric-box {
-            background: #06060c;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 6px;
-            text-align: center;
-        }
-        .metric-box span {
-            font-size: 0.62rem;
-            color: var(--text-muted);
-            display: block;
-            margin-bottom: 2px;
-        }
-        .metric-box strong {
-            font-size: 0.8rem;
-        }
-        .analysis-desc {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-            background: #06060c;
-            padding: 8px;
-            border-radius: 8px;
-            border-left: 3px solid var(--neon-violet);
-        }
-        .footer-tag {
-            text-align: center;
-            font-size: 0.62rem;
-            color: var(--text-muted);
-            margin-top: 10px;
-        }
-    </style>
+  .chart-panel{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:10px;
+    padding:8px; margin-bottom:10px; position:relative;
+  }
+  canvas{ width:100%; display:block; height:280px; }
+  .price-tag{
+    position:absolute; right:14px; top:14px; font-family:var(--mono);
+    font-size:0.9rem; color:var(--text); background:var(--panel);
+    padding:3px 8px; border-radius:4px; border:1px solid var(--line);
+  }
+  .status{ font-size:0.66rem; color:var(--muted); text-align:right; margin-top:4px; font-family:var(--mono); }
+
+  .signal-panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px;
+  }
+  .signal-head{
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;
+  }
+  .signal-head .label{ font-size:0.78rem; font-weight:600; }
+  .badge{
+    font-family:var(--mono); font-size:0.7rem; padding:3px 8px; border-radius:5px;
+    border:1px solid var(--line); color:var(--muted);
+  }
+  .badge.buy{ color:var(--bull); border-color:var(--bull); background:var(--bull-dim); }
+  .badge.sell{ color:var(--bear); border-color:var(--bear); background:var(--bear-dim); }
+
+  .metrics{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:10px; }
+  .metric{ background:var(--panel-2); border:1px solid var(--line); border-radius:7px; padding:7px; text-align:center; }
+  .metric span{ display:block; font-size:0.6rem; color:var(--muted); margin-bottom:3px; }
+  .metric strong{ font-family:var(--mono); font-size:0.82rem; }
+
+  .note{
+    font-size:0.72rem; line-height:1.5; color:var(--muted); background:var(--panel-2);
+    border-left:2px solid var(--struct); padding:8px 10px; border-radius:6px;
+  }
+  .note.empty{ border-left-color:var(--muted); }
+
+  .disclaimer{
+    font-size:0.62rem; color:var(--muted); line-height:1.5; margin-top:10px; text-align:center;
+  }
+
+  .watchlist{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px; margin-bottom:10px;
+  }
+  .watchlist-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .watchlist-head span{ font-size:0.78rem; font-weight:600; }
+  .chips{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
+  .chip{
+    font-family:var(--mono); font-size:0.68rem; padding:4px 8px; border-radius:12px;
+    border:1px solid var(--line); background:var(--panel-2); color:var(--muted); cursor:pointer;
+  }
+  .chip.on{ color:var(--text); border-color:var(--struct); }
+  .chip .rm{ margin-left:5px; color:var(--bear); }
+  .add-row{ display:flex; gap:6px; margin-bottom:8px; }
+  .add-row input{ flex:1; }
+  .wl-row{
+    display:flex; align-items:center; justify-content:space-between; gap:6px;
+    padding:7px 8px; border-radius:6px; background:var(--panel-2); margin-bottom:5px; cursor:pointer;
+  }
+  .wl-row:hover{ border:1px solid var(--struct); padding:6px 7px; }
+  .wl-sym{ font-family:var(--mono); font-size:0.72rem; }
+  .wl-price{ font-family:var(--mono); font-size:0.7rem; color:var(--muted); }
+  .wl-badge{ font-family:var(--mono); font-size:0.62rem; padding:2px 6px; border-radius:4px; border:1px solid var(--line); color:var(--muted); }
+  .wl-badge.buy{ color:var(--bull); border-color:var(--bull); background:var(--bull-dim); }
+  .wl-badge.sell{ color:var(--bear); border-color:var(--bear); background:var(--bear-dim); }
+</style>
 </head>
 <body>
+<div class="wrap">
 
-    <div class="container">
-        <h1>La main de Dieu — Tactus SMC</h1>
+  <div class="title">
+    <h1>Tactus Auto SMC</h1>
+    <span>structure de marché — données réelles</span>
+  </div>
 
-        <div class="row-group">
-            <div class="field" style="margin-bottom:0;">
-                <label for="assetChoice">Actif</label>
-                <select id="assetChoice">
-                    <option value="EURUSD">EUR/USD</option>
-                    <option value="GBPUSD">GBP/USD</option>
-                    <option value="XAUUSD">XAU/USD (Gold)</option>
-                    <option value="US30">US30 (Dow Jones)</option>
-                </select>
-            </div>
-            <div class="field" style="margin-bottom:0;">
-                <label for="trendChoice">Biais Institutionnel</label>
-                <select id="trendChoice">
-                    <option value="BUY">🟢 Achat (Bullish)</option>
-                    <option value="SELL">🔴 Vente (Bearish)</option>
-                </select>
-            </div>
-        </div>
+  <div class="controls">
+    <select id="symbolSelect">
+      <option value="BTCUSDT">BTC/USDT</option>
+      <option value="ETHUSDT">ETH/USDT</option>
+      <option value="SOLUSDT">SOL/USDT</option>
+      <option value="XRPUSDT">XRP/USDT</option>
+      <option value="PAXGUSDT">XAU/USD (via PAXG)</option>
+      <option value="__custom">Autre paire…</option>
+    </select>
+    <input id="customSymbol" placeholder="ex: BNBUSDT" style="display:none; flex:1 1 100px;">
+    <select id="intervalSelect">
+      <option value="1m">1 min</option>
+      <option value="5m" selected>5 min</option>
+    </select>
+    <button class="primary" id="refreshBtn">Analyser</button>
+    <button class="toggle" id="autoBtn">Auto</button>
+  </div>
 
-        <div class="dropzone" onclick="document.getElementById('fileUpload').click()">
-            <span id="uploadLabel" style="font-size: 0.78rem; font-weight: 500; color: #d8b4fe;">📁 Importer la capture d'écran graphique</span>
-            <input type="file" id="fileUpload" accept="image/*" onchange="loadAndDrawVisual(event)">
-        </div>
-
-        <!-- Visuel interactif : L'image avec le canvas par-dessus -->
-        <div class="canvas-container" id="canvasContainer">
-            <img id="chartImage" src="" alt="Graphique">
-            <canvas id="overlayCanvas"></canvas>
-        </div>
-
-        <div class="field">
-            <label for="priceInput">Prix exact visible sur ton graphique :</label>
-            <input type="number" id="priceInput" step="any" placeholder="Ex: 2350.00 ou 1.0845">
-        </div>
-
-        <button class="btn-execute" onclick="executeVisualAnalysis()">Tracer les Niveaux & Analyser</button>
-
-        <div class="results-wrapper" id="resultsWrapper">
-            <div class="results-top">
-                <div class="stars">★★★★★</div>
-                <div class="badge-score" id="badgeScore">Probabilité : 97.4%</div>
-            </div>
-
-            <div class="metrics-container">
-                <div class="metric-box">
-                    <span>Entrée</span>
-                    <strong id="outEntry" style="color: #d8b4fe;">--</strong>
-                </div>
-                <div class="metric-box">
-                    <span>Stop Loss</span>
-                    <strong id="outSl" style="color: var(--bearish-red);">--</strong>
-                </div>
-                <div class="metric-box">
-                    <span>Take Profit</span>
-                    <strong id="outTp" style="color: var(--success-green);">--</strong>
-                </div>
-            </div>
-
-            <div class="analysis-desc" id="outDesc">
-                <strong>Analyse Visuelle Tactus :</strong> Lignes de structure, Order Block et zones de liquidité tracés directement sur votre capture. Setup validé à haute probabilité.
-            </div>
-        </div>
-
-        <div class="footer-tag">Tactus Visual Matrix v8.0</div>
+  <div class="watchlist">
+    <div class="watchlist-head">
+      <span>Watchlist</span>
+      <button class="primary" id="scanBtn" style="padding:5px 8px; font-size:0.68rem;">Scanner</button>
     </div>
+    <div class="chips" id="chips"></div>
+    <div class="add-row">
+      <input id="wlInput" placeholder="ajouter une paire, ex: BNBUSDT">
+      <button id="wlAddBtn">+</button>
+    </div>
+    <div id="wlResults"></div>
+  </div>
 
-    <script>
-        let imageElement = document.getElementById('chartImage');
-        let canvas = document.getElementById('overlayCanvas');
-        let ctx = canvas.getContext('2d');
-        let fileLoaded = false;
+  <div class="chart-panel">
+    <canvas id="chart" width="900" height="560"></canvas>
+    <div class="price-tag" id="priceTag">--</div>
+    <div class="status" id="statusLine">en attente…</div>
+  </div>
 
-        function loadAndDrawVisual(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+  <div class="signal-panel">
+    <div class="signal-head">
+      <span class="label">Setup détecté</span>
+      <span class="badge" id="badge">--</span>
+    </div>
+    <div class="metrics">
+      <div class="metric"><span>Entrée</span><strong id="mEntry">--</strong></div>
+      <div class="metric"><span>Stop</span><strong id="mSL">--</strong></div>
+      <div class="metric"><span>Cible</span><strong id="mTP">--</strong></div>
+    </div>
+    <div class="note" id="noteBox">Choisis une paire et lance l'analyse.</div>
+  </div>
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                imageElement.src = event.target.result;
-                imageElement.onload = function() {
-                    document.getElementById('canvasContainer').style.display = 'block';
-                    document.getElementById('uploadLabel').textContent = "✅ Image chargée : " + file.name;
-                    
-                    // Ajuster les dimensions du canvas sur l'image réelle
-                    canvas.width = imageElement.naturalWidth;
-                    canvas.height = imageElement.naturalHeight;
-                    
-                    // Dessiner un repère visuel initial sur l'image
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.strokeStyle = '#9d4edd';
-                    ctx.lineWidth = 4;
-                    ctx.strokeRect(canvas.width * 0.1, canvas.height * 0.3, canvas.width * 0.8, canvas.height * 0.4);
-                    
-                    fileLoaded = true;
-                };
-            };
-            reader.readAsDataURL(file);
-        }
+  <div class="disclaimer">
+    Outil éducatif basé sur des règles de structure de marché appliquées aux données réelles Binance.
+    Ce n'est pas un conseil financier — vérifie toujours par toi-même avant toute décision.<br>
+    "XAU/USD" utilise PAXG/USDT (token adossé à l'or physique) : le prix suit l'or spot de très près,
+    mais ce n'est pas le flux forex officiel — il peut y avoir un léger écart.
+  </div>
 
-        function executeVisualAnalysis() {
-            if (!fileLoaded) {
-                alert("Veuillez d'abord importer la capture de votre graphique !");
-                return;
-            }
+</div>
 
-            const asset = document.getElementById('assetChoice').value;
-            const trend = document.getElementById('trendChoice').value;
-            let currentPrice = parseFloat(document.getElementById('priceInput').value);
+<script>
+const els = {
+  symbol: document.getElementById('symbolSelect'),
+  customSymbol: document.getElementById('customSymbol'),
+  interval: document.getElementById('intervalSelect'),
+  refresh: document.getElementById('refreshBtn'),
+  auto: document.getElementById('autoBtn'),
+  canvas: document.getElementById('chart'),
+  priceTag: document.getElementById('priceTag'),
+  status: document.getElementById('statusLine'),
+  badge: document.getElementById('badge'),
+  mEntry: document.getElementById('mEntry'),
+  mSL: document.getElementById('mSL'),
+  mTP: document.getElementById('mTP'),
+  note: document.getElementById('noteBox'),
+  chips: document.getElementById('chips'),
+  wlInput: document.getElementById('wlInput'),
+  wlAddBtn: document.getElementById('wlAddBtn'),
+  wlResults: document.getElementById('wlResults'),
+  scanBtn: document.getElementById('scanBtn'),
+};
 
-            if (isNaN(currentPrice) || currentPrice <= 0) {
-                alert("Veuillez entrer le prix exact affiché sur votre graphique !");
-                return;
-            }
+let autoTimer = null;
+let watchlist = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'PAXGUSDT'];
 
-            const delta = currentPrice * 0.0006;
-            let entry = currentPrice;
-            let sl = trend === "BUY" ? currentPrice - delta : currentPrice + delta;
-            let tp = trend === "BUY" ? currentPrice + (delta * 3) : currentPrice - (delta * 3);
+function renderChips() {
+  els.chips.innerHTML = '';
+  watchlist.forEach(sym => {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.textContent = sym;
+    const rm = document.createElement('span');
+    rm.className = 'rm';
+    rm.textContent = '✕';
+    rm.addEventListener('click', (e) => {
+      e.stopPropagation();
+      watchlist = watchlist.filter(s => s !== sym);
+      renderChips();
+    });
+    chip.appendChild(rm);
+    els.chips.appendChild(chip);
+  });
+}
+renderChips();
 
-            const decimals = asset === "US30" ? 0 : (asset === "XAUUSD" ? 2 : 5);
+els.wlAddBtn.addEventListener('click', () => {
+  const v = (els.wlInput.value || '').trim().toUpperCase();
+  if (v && !watchlist.includes(v)) {
+    watchlist.push(v);
+    renderChips();
+    els.wlInput.value = '';
+  }
+});
+els.scanBtn.addEventListener('click', scanWatchlist);
 
-            document.getElementById('outEntry').textContent = entry.toFixed(decimals);
-            document.getElementById('outSl').textContent = sl.toFixed(decimals);
-            document.getElementById('outTp').textContent = tp.toFixed(decimals);
+els.symbol.addEventListener('change', () => {
+  els.customSymbol.style.display = els.symbol.value === '__custom' ? 'block' : 'none';
+});
+els.refresh.addEventListener('click', runAnalysis);
+els.auto.addEventListener('click', () => {
+  if (autoTimer) {
+    clearInterval(autoTimer);
+    autoTimer = null;
+    els.auto.classList.remove('on');
+  } else {
+    els.auto.classList.add('on');
+    autoTimer = setInterval(runAnalysis, 30000);
+    runAnalysis();
+  }
+});
 
-            // Redessiner proprement les lignes visuelles sur le canvas par-dessus l'image
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Zone Order Block (Rectangle violet transparent)
-            ctx.fillStyle = 'rgba(157, 78, 221, 0.25)';
-            ctx.fillRect(canvas.width * 0.15, canvas.height * 0.4, canvas.width * 0.7, canvas.height * 0.2);
-            ctx.strokeStyle = '#9d4edd';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(canvas.width * 0.15, canvas.height * 0.4, canvas.width * 0.7, canvas.height * 0.2);
-
-            // Ligne d'Entrée (Bleue)
-            ctx.strokeStyle = '#00b4d8';
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height * 0.5);
-            ctx.lineTo(canvas.width, canvas.height * 0.5);
-            ctx.stroke();
-
-            // Ligne Stop Loss (Rouge)
-            ctx.strokeStyle = '#ff1744';
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.moveTo(0, trend === "BUY" ? canvas.height * 0.7 : canvas.height * 0.3);
-            ctx.lineTo(canvas.width, trend === "BUY" ? canvas.height * 0.7 : canvas.height * 0.3);
-            ctx.stroke();
-
-            // Ligne Take Profit (Verte)
-            ctx.strokeStyle = '#00e676';
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.moveTo(0, trend === "BUY" ? canvas.height * 0.15 : canvas.height * 0.85);
-            ctx.lineTo(canvas.width, trend === "BUY" ? canvas.height * 0.15 : canvas.height * 0.85);
-            ctx.stroke();
-
-            document.getElementById('resultsWrapper').style.display = 'block';
-        }
-    </script>
-</body>
-</html>
+function currentSymbol() {
+  if (els.symbol.value === '__custom') {
+    return
 
