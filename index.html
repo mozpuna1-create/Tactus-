@@ -43,7 +43,7 @@
             margin-bottom: 16px;
             text-shadow: 0 0 10px var(--neon-glow);
         }
-        .form-group {
+        .pair-selector {
             margin-bottom: 12px;
         }
         label {
@@ -52,7 +52,7 @@
             color: var(--text-muted);
             margin-bottom: 6px;
         }
-        select, input[type="file"] {
+        select, input[type="text"] {
             width: 100%;
             padding: 10px;
             background: #1a1a32;
@@ -68,7 +68,26 @@
             text-align: center;
             border-radius: 8px;
             background: rgba(157, 78, 221, 0.05);
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .preview-container {
+            width: 100%;
             margin-bottom: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: #000;
+            display: none;
+            text-align: center;
+        }
+        .preview-container img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
         button {
             width: 100%;
@@ -152,78 +171,76 @@
 
     <div class="container">
         <h1>La main de Dieu — Tactus SMC</h1>
-        
-        <div class="form-group">
-            <label for="session">Session & Actif :</label>
-            <select id="session">
-                <option value="ny">New York — XAU/US30 (M1)</option>
-                <option value="london">Londres — EUR/GBP (M5)</option>
-                <option value="tokyo">Tokyo — USD/JPY (M15)</option>
+
+        <div class="pair-selector">
+            <label for="actif">Actif & Unité de temps :</label>
+            <select id="actif" onchange="mettreAJourTitre()">
+                <option value="XAUUSD (M1)">XAU/USD (M1)</option>
+                <option value="XAUUSD (M5)">XAU/USD (M5)</option>
+                <option value="US30 (M1)">US30 (M1)</option>
+                <option value="EURUSD (M5)">EUR/USD (M5)</option>
+                <option value="GBPUSD (M5)">GBP/USD (M5)</option>
+                <option value="USDJPY (M15)">USD/JPY (M15)</option>
+                <option value="BTCUSD (M15)">BTC/USD (M15)</option>
+                <option value="AUTRE">Autre actif (Personnalisé)</option>
             </select>
         </div>
 
-        <div class="file-drop">
-            <label for="file-input" style="cursor: pointer; margin: 0;">Importer un screenshot de graphique :</label>
-            <input type="file" id="file-input" accept="image/*" style="margin-top: 8px;">
+        <div class="file-drop" onclick="document.getElementById('file-input').click()">
+            <span style="color: var(--text-main); font-weight: bold;">🖼️ Importer un screenshot de graphique</span>
+            <p style="margin: 4px 0 0 0; font-size: 0.8rem;">Glisse ou clique pour afficher le visuel</p>
+            <input type="file" id="file-input" accept="image/*" onchange="chargerImage(event)">
         </div>
 
-        <button onclick="lancerAnalyse()">🔍 Analyser le graphique</button>
+        <div class="preview-container" id="preview-box">
+            <img id="image-preview" src="" alt="Graphique analysé">
+        </div>
+
+        <button onclick="lancerAnalyse()">🔍 Lancer l'analyse SMC</button>
 
         <div class="results" id="results-panel">
-            <h2>📈 Analyse SMC — XAUUSD M1</h2>
+            <h2 id="result-title">📈 Analyse SMC — XAUUSD (M1)</h2>
             
             <h3>📊 VUE D'ENSEMBLE</h3>
-            <p>Le graphique M1 de l'or (XAU/USD) montre une structure clairement <strong>bearish</strong> sur la session visible. Après un sommet autour de ~4399, le prix a effectué une série de Lower Highs et Lower Lows, culminant avec une chute agressive vers ~4370-4371 en fin de session.</p>
+            <p>Analyse structurelle de la price action institutionnelle. Détection des déséquilibres, des zones d'accumulation/distribution et des retournements de tendance potentiels.</p>
 
             <h3>🏗️ STRUCTURE DE MARCHÉ</h3>
             <table>
                 <tr><th>Élément</th><th>Détail</th></tr>
-                <tr><td>Biais</td><td><span style="color: var(--bearish-red);">●</span> Bearish</td></tr>
-                <tr><td>Phase</td><td>Distribution ➔ Tendance baissière</td></tr>
-                <tr><td>Dernier événement</td><td>BOS baissier confirmé (cassure du précédent LL ~4374)</td></tr>
-                <tr><td>Séquence</td><td>HH ➔ LH ➔ HL ➔ LL en cours</td></tr>
+                <tr><td>Biais Actuel</td><td><span style="color: var(--bearish-red);">●</span> Bearish / Bullish dynamique</td></tr>
+                <tr><td>Phase SMC</td><td>Impulsion ➔ Retracement / Mitigation</td></tr>
+                <tr><td>Dernier événement</td><td>BOS / CHoCH validé sur structure mineure</td></tr>
             </table>
-            
-            <h3>Points clés identifiés :</h3>
+
+            <h3>💧 LIQUIDITÉ (SSL / BSL)</h3>
+            <p><span style="color: var(--bearish-red);">●</span> <strong>SSL (Sell-Side) :</strong> Pools de liquidité identifiés sous les derniers swing lows.</p>
+            <p><span style="color: var(--bullish-green);">●</span> <strong>BSL (Buy-Side) :</strong> Cibles de liquidité situées au-dessus des swing highs majeurs.</p>
+
+            <h3>📉 ZONES INSTITUTIONNELLES (OB & FVG)</h3>
             <ul>
-                <li><strong>HH :</strong> ~4399 (début du graphique)</li>
-                <li><strong>LH :</strong> ~4389 (rebond intermédiaire)</li>
-                <li><strong>LL actuel :</strong> ~4371 en cours de formation</li>
-                <li>Le BOS bearish est matérialisé par la ligne horizontale rouge (~4374) que le prix vient de casser.</li>
+                <li><strong>Order Blocks (OB) :</strong> Dernières bougies opposées avant l'impulsion majeure.</li>
+                <li><strong>Fair Value Gaps (FVG) :</strong> Imbalances de prix à combler avant continuation de tendance.</li>
             </ul>
 
-            <h3>💧 ANALYSE DE LIQUIDITÉ</h3>
-            <p><span style="color: var(--bearish-red);">●</span> <strong>SSL (Sell-Side Liquidity) :</strong> Zone sous ~4371 ➔ Liquidité purgée en bas. Les stops des acheteurs successifs se situent sous chaque LL.</p>
-            <p><span style="color: var(--bullish-green);">●</span> <strong>BSL (Buy-Side Liquidity) :</strong> Zone ~4388-4390 ➔ Anciens lows reconvertis en BSL / Highs majeurs du début de session.</p>
-
-            <h3>📉 FVG & BREAKER BLOCK</h3>
-            <ul>
-                <li><strong>Fair Value Gaps (FVG) :</strong> FVG Bearish visible dans la zone ~4376-4379 et ~4374-4377 (chute agressive). Zones de retour probable avant continuation.</li>
-                <li><strong>Breaker Block :</strong> Ancien support ~4374 devenu résistance / Breaker Block bearish.</li>
-            </ul>
-
-            <h3>🎯 SCÉNARIO PRINCIPAL — BEARISH CONTINUATION (Probabilité : ~70%)</h3>
+            <h3>🎯 PLAN DE TRADING & SCÉNARIO</h3>
             <div class="scenario-box">
-                <p>🔹 <strong>Retour vers FVG / OB Supply :</strong> ~4376-4383</p>
-                <p>🔹 <strong>Rejet + continuation baissière</strong></p>
-                <p>🎯 <strong>Cible 1 :</strong> ~4366-4364</p>
-                <p>🎯 <strong>Cible 2 :</strong> ~4359 (extension)</p>
-                <p>❌ <strong>Invalidation :</strong> Clôture > 4386</p>
+                <p>🔹 <strong>Zone d'intervention :</strong> Mitigation sur OB / FVG clé</p>
+                <p>🔹 <strong>Confirmation :</strong> CHoCH en Lower Timeframe (LTF)</p>
+                <p>🎯 <strong>Objectif Principal :</strong> Balayage de la liquidité opposée</p>
+                <p>❌ <strong>Invalidation :</strong> Cassure de la structure de référence HTF</p>
             </div>
 
-            <h3>⚡ NIVEAUX À SURVEILLER</h3>
+            <h3>⚡ NIVEAUX CLÉS</h3>
             <table>
-                <tr><th>Niveau</th><th>Type</th><th>Importance</th></tr>
-                <tr><td>~4383-4386</td><td>OB Supply / FVG</td><td><span style="color: var(--bearish-red);">●</span> Critique</td></tr>
-                <tr><td>~4379-4380</td><td>Breaker / FVG</td><td><span style="color: var(--bearish-red);">●</span> Haute</td></tr>
-                <tr><td>~4374</td><td>Ancien support ➔ Résistance</td><td><span style="color: var(--bearish-red);">●</span> Haute</td></tr>
-                <tr><td>~4370-4371</td><td>LL actuel / SSL</td><td><span style="color: var(--pivot-yellow);">●</span> Pivot</td></tr>
-                <tr><td>~4366</td><td>Cible baissière T1</td><td><span style="color: var(--bullish-green);">●</span> Valide</td></tr>
+                <tr><th>Zone / Prix</th><th>Type</th><th>Rôle</th></tr>
+                <tr><td>Zone Haute</td><td>Supply / OB</td><td>Résistance / Rejet potentiels</td></tr>
+                <tr><td>Zone Médiane</td><td>FVG / Breaker</td><td>Point de pivot institutionnel</td></tr>
+                <tr><td>Zone Basse</td><td>Demand / SSL</td><td>Support / Chasse aux stops</td></tr>
             </table>
 
             <h3>🔑 CONCLUSION</h3>
-            <p>Biais M1 : <strong>BEARISH confirmé</strong>. Attendre un retest des zones OB/FVG pour une entrée short optimale plutôt que de chasser le prix.</p>
-            <p style="font-size: 0.75rem; color: #ffcc00; margin-top: 8px;">⚠️ Confiance : 6.5/10 (Limitée par la résolution mobile et l'absence de contexte HTF).</p>
+            <p>Attendre une réaction propre sur les zones d'intérêt identifiées. Ne jamais chasser le marché sans mitigation préalable.</p>
+            <p style="font-size: 0.75rem; color: var(--pivot-yellow); margin-top: 8px;">⚠️ Modèle Tactus SMC — Modèle de succès enregistré.</p>
         </div>
 
         <div class="footer">
@@ -232,15 +249,32 @@
     </div>
 
     <script>
+        function chargerImage(event) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                const output = document.getElementById('image-preview');
+                output.src = reader.result;
+                document.getElementById('preview-box').style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function mettreAJourTitre() {
+            const select = document.getElementById('actif');
+            const titre = document.getElementById('result-title');
+            titre.textContent = "📈 Analyse SMC — " + select.value;
+        }
+
         function lancerAnalyse() {
             const btn = document.querySelector('button');
             btn.textContent = "Analyse institutionnelle en cours...";
             setTimeout(() => {
-                btn.textContent = "🔍 Analyser le graphique";
-                alert("Analyse de la session M1 chargée avec succès !");
+                btn.textContent = "🔍 Lancer l'analyse SMC";
+                alert("Analyse de la paire mise à jour avec succès par La main de Dieu !");
             }, 800);
         }
     </script>
 </body>
 </html>
+
 
