@@ -3,367 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La main de Dieu — Tactus SMC</title>
+    <title>SMCdetect — Analyse SMC par IA</title>
     <style>
         :root {
-            --bg-dark: #070712;
-            --card-bg: #111122;
-            --neon-violet: #9d4edd;
-            --neon-glow: rgba(157, 78, 221, 0.4);
+            --bg-dark: #0b0e14;
+            --card-bg: #131823;
+            --card-border: #1e2638;
+            --neon-blue: #3b82f6;
+            --neon-glow: rgba(59, 130, 246, 0.25);
             --text-main: #ffffff;
-            --text-muted: #a0a0c0;
-            --border-color: #242442;
-            --bearish-red: rgba(235, 87, 87, 0.45);
-            --bullish-green: rgba(38, 166, 154, 0.35);
-            --bearish-border: #eb5757;
-            --bullish-border: #26a69a;
-            --pivot-yellow: #ffcc00;
-            --entry-blue: #00b4d8;
+            --text-muted: #94a3b8;
+            --success-green: #10b981;
+            --warning-orange: #f59e0b;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-main);
             margin: 0;
-            padding: 12px;
+            padding: 0;
+        }
+
+        /* Barre de navigation */
+        nav {
             display: flex;
-            justify-content: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 480px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 0 20px var(--neon-glow);
-            box-sizing: border-box;
+            border-bottom: 1px solid var(--card-border);
         }
-        h1 {
-            font-size: 1.3rem;
-            color: var(--neon-violet);
-            text-align: center;
-            margin-bottom: 16px;
-            text-shadow: 0 0 10px var(--neon-glow);
-        }
-        .pair-selector {
-            margin-bottom: 12px;
-        }
-        label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        select {
-            width: 100%;
-            padding: 10px;
-            background: #1a1a32;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            box-sizing: border-box;
-        }
-        .file-drop {
-            border: 2px dashed var(--neon-violet);
-            padding: 16px;
-            text-align: center;
-            border-radius: 8px;
-            background: rgba(157, 78, 221, 0.05);
-            margin-bottom: 16px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .file-drop:hover {
-            background: rgba(157, 78, 221, 0.1);
-        }
-        input[type="file"] {
-            display: none;
-        }
-        
-        .preview-container {
-            position: relative;
-            width: 100%;
-            margin-bottom: 16px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            background: #000;
-            display: none;
-        }
-        .preview-container img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .trade-block {
-            position: absolute;
-            left: 45%;
-            width: 50%;
-            box-sizing: border-box;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.4s ease-in-out;
-            font-size: 0.7rem;
+        .logo {
+            font-size: 1.25rem;
             font-weight: bold;
-        }
-        .preview-container.analyzed .trade-block {
-            opacity: 1;
-        }
-
-        .block-profit {
-            top: 22%;
-            height: 40%;
-            background-color: var(--bullish-green);
-            border: 1px dashed var(--bullish-border);
-            border-bottom: none;
-        }
-        .block-loss {
-            top: 62%;
-            height: 10%;
-            background-color: var(--bearish-red);
-            border: 1px dashed var(--bearish-border);
+            color: var(--text-main);
             display: flex;
             align-items: center;
-            padding: 0 6px;
-            color: #ffe6e6;
-            justify-content: space-between;
-        }
-        
-        .level-tag {
-            position: absolute;
-            right: 5%;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            z-index: 5;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            opacity: 0;
-            transition: opacity 0.4s ease-in-out;
-        }
-        .preview-container.analyzed .level-tag {
-            opacity: 1;
-        }
-        .tag-tp3 { top: 20%; background: var(--bullish-border); color: #000; }
-        .tag-tp2 { top: 38%; background: var(--bullish-border); color: #000; }
-        .tag-tp1 { top: 52%; background: var(--entry-blue); color: #fff; }
-        .tag-sl  { top: 64%; background: var(--bearish-border); color: #fff; }
-
-        .results {
-            background: #0d0d1a;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 14px;
-            display: none;
-        }
-        .results h2 {
-            font-size: 1rem;
-            color: var(--neon-violet);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 6px;
-            margin-top: 0;
-        }
-        .results h3 {
-            font-size: 0.9rem;
-            color: var(--neon-violet);
-            margin-top: 14px;
-            margin-bottom: 6px;
-        }
-        p, li {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-        ul {
-            padding-left: 16px;
-            margin: 4px 0;
-        }
-        .trade-levels-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin-top: 8px;
-            margin-bottom: 8px;
         }
-        .level-box {
-            background: #111122;
-            border-radius: 6px;
-            padding: 8px;
-            text-align: center;
-            border: 1px solid var(--border-color);
+        .logo span {
+            color: var(--neon-blue);
         }
-        .level-box.full-width {
-            grid-column: span 2;
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
         }
-        .level-box h4 { margin: 0 0 3px 0; font-size: 0.72rem; color: var(--text-muted); }
-        .level-box .value { font-size: 0.95rem; font-weight: bold; }
-        
-        .entry-value { color: var(--entry-blue); }
-        .tp-value { color: var(--bullish-border); }
-        .sl-value { color: var(--bearish-border); }
-        
-        .rr-box {
-            text-align: center;
-            font-size: 0.82rem;
+        .nav-links a {
             color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: var(--text-main);
+        }
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+        }
+        .btn-outline:hover {
+            border-color: var(--neon-blue);
+        }
+        .btn-primary {
+            background: var(--neon-blue);
+            color: white;
+            box-shadow: 0 0 15px var(--neon-glow);
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        /* Conteneur Principal */
+        .main-container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Barre d'outils / Contrôles Dashboard */
+        .dashboard-toolbar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .tool-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .tool-btn.active, .tool-btn:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--neon-blue);
+            color: var(--text-main);
+        }
+
+        /* Grille du Dashboard d'Analyse */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        @media (max-width: 850px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* En-tête Actif */
+        .asset-header {
+            grid-column: span 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: #182030;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
             margin-bottom: 10px;
         }
-        .rr-value { font-weight: bold; color: var(--pivot-yellow); }
-
-        .scenario-box {
-            background: #111122;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 10px;
-            margin-top: 6px;
-        }
-        .scenario-box p {
-            color: var(--text-main);
-            margin: 3px 0;
-            font-size: 0.8rem;
+        .asset-header .up {
+            color: var(--success-green);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        .footer {
+        /* Métriques SMC (Barres de progression) */
+        .metrics-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-content: center;
+        }
+        .metric-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .metric-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #1a2234;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+        .fill-green { background: var(--success-green); box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+        .fill-blue { background: var(--neon-blue); box-shadow: 0 0 10px var(--neon-glow); }
+        .fill-orange { background: var(--warning-orange); box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+
+        /* Bloc Score Global */
+        .score-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #161d2d;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px;
             text-align: center;
+        }
+        .score-gauge {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: conic-gradient(var(--neon-blue) 0% 87%, #1e2638 87% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+        .score-inner {
+            width: 90px;
+            height: 90px;
+            background: #131823;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .score-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--text-main);
+            line-height: 1;
+        }
+        .score-total {
             font-size: 0.7rem;
             color: var(--text-muted);
-            margin-top: 16px;
+        }
+        .badge-buy {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .score-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        /* Section Cookies / Footer bas de page */
+        .cookie-banner {
+            margin-top: 40px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .cookie-banner button {
+            background: #1f293d;
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .cookie-banner button:hover {
+            border-color: var(--text-main);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>La main de Dieu — Tactus SMC</h1>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <span>SMC</span>detect
+        </div>
+        <ul class="nav-links">
+            <li><a href="#">Fonctionnalités</a></li>
+            <li><a href="#">Comment ça marche</a></li>
+            <li><a href="#">Tarifs</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="btn btn-outline">Connexion</button>
+            <button class="btn btn-primary">S'inscrire</button>
+        </div>
+    </nav>
 
-        <div class="pair-selector">
-            <label for="actif">Actif & Unité de temps :</label>
-            <select id="actif">
-                <option value="GBPUSD">GBP/USD (M1 - Institutional Flow)</option>
-                <option value="XAUUSD">XAU/USD (M1 - Gold Delivery)</option>
-                <option value="US30">US30 (M1 - Index Algorithmic)</option>
-                <option value="EURUSD">EUR/USD (M5 - Smart Money)</option>
-            </select>
+    <!-- Contenu Principal -->
+    <div class="main-container">
+
+        <!-- Barre d'outils interactive -->
+        <div class="dashboard-toolbar">
+            <button class="tool-btn active">📁 Upload</button>
+            <button class="tool-btn">🤖 Scan IA</button>
+            <button class="tool-btn">⚡ Détection</button>
+            <button class="tool-btn">📊 Score</button>
         </div>
 
-        <div class="file-drop" onclick="document.getElementById('file-input').click()">
-            <span style="color: var(--text-main); font-weight: bold;" id="drop-text">🖼️ Glisser ou importer une photo</span>
-            <p style="margin: 4px 0 0 0; font-size: 0.8rem;">Analyse Institutionnelle & Multi-TP Avancée</p>
-            <input type="file" id="file-input" accept="image/*" onchange="analyserExpert(event)">
-        </div>
+        <!-- Dashboard d'Analyse -->
+        <div class="dashboard-grid">
 
-        <div class="preview-container" id="preview-box">
-            <img id="image-preview" src="" alt="Graphique analysé">
-            
-            <div class="trade-block block-profit"></div>
-            <div class="trade-block block-loss">
-                <span>Stop Loss (SL)</span>
-                <span id="box-sl">1.3508</span>
+            <!-- En-tête Actif -->
+            <div class="asset-header">
+                <span>EURUSD</span>
+                <span>H4</span>
+                <span class="up">▲ 1.08452 +0.24%</span>
             </div>
 
-            <div class="level-tag tag-tp3" id="tag-tp3">TP3: 1.3516</div>
-            <div class="level-tag tag-tp2" id="tag-tp2">TP2: 1.3513</div>
-            <div class="level-tag tag-tp1" id="tag-tp1">TP1: 1.3510</div>
-            <div class="level-tag tag-sl" id="tag-sl">SL: 1.3508</div>
-        </div>
+            <!-- Indicateurs SMC (Gauche) -->
+            <div class="metrics-section">
+                <div class="metric-row">
+                    <div class="metric-info">
+                        <span>Fair Value Gap</span>
+                        <span style="color: var(--success-green);">94%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill fill-green" style="width: 94%;"></div>
+                    </div>
+                </div>
 
-        <div class="results" id="results-panel">
-            <h2>📈 Rapport d'Analyse Tactus SMC Expert</h2>
-            
-            <h3>🔍 Structure Institutionnelle & Biais (ICT)</h3>
-            <ul id="ai-structure">
-                <li><strong>Phase de Marché :</strong> Balayage de liquidité (Stop Hunt) validé sur les creux.</li>
-                <li><strong>Market Structure Shift (MSS) :</strong> Rupture de structure par impulsion (Displacement) confirmée.</li>
-                <li><strong>Fair Value Gap (FVG) :</strong> Inefficacité de prix comblée pour amorcer l'expansion.</li>
-            </ul>
+                <div class="metric-row">
+                    <div class="metric-info">
+                        <span>Order Block</span>
+                        <span style="color: var(--neon-blue);">89%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill fill-blue" style="width: 89%;"></div>
+                    </div>
+                </div>
 
-            <h3>🎯 Plan Tactique & Objectifs Multi-TP</h3>
-            <div class="trade-levels-grid">
-                <div class="level-box">
-                    <h4>Stop Loss Institutionnel</h4>
-                    <div class="value sl-value" id="val-sl">1.3508</div>
+                <div class="metric-row">
+                    <div class="metric-info">
+                        <span>Break of Structure</span>
+                        <span style="color: var(--success-green);">91%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill fill-green" style="width: 91%;"></div>
+                    </div>
                 </div>
-                <div class="level-box">
-                    <h4>Take Profit 1 (TP1 - Sécu)</h4>
-                    <div class="value entry-value" id="val-tp1">1.3510</div>
-                </div>
-                <div class="level-box">
-                    <h4>Take Profit 2 (TP2 - Cible)</h4>
-                    <div class="value tp-value" id="val-tp2">1.3513</div>
-                </div>
-                <div class="level-box">
-                    <h4>Take Profit 3 (TP3 - Extension)</h4>
-                    <div class="value tp-value" id="val-tp3">1.3516</div>
+
+                <div class="metric-row">
+                    <div class="metric-info">
+                        <span>Zone Liquidité</span>
+                        <span style="color: var(--warning-orange);">76%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill fill-orange" style="width: 76%;"></div>
+                    </div>
                 </div>
             </div>
-            <div class="rr-box">
-                Rendement Cible (Risk-to-Reward Global) : <span class="rr-value" id="val-rr">1 : 4.1</span>
+
+            <!-- Score Global et Recommandation (Droite) -->
+            <div class="score-section">
+                <div class="score-gauge">
+                    <div class="score-inner">
+                        <span class="score-value">87</span>
+                        <span class="score-total">/100</span>
+                    </div>
+                </div>
+                <div class="badge-buy">Strong Buy</div>
+                <div class="score-desc">4 patterns SMC détectés avec haute confiance</div>
             </div>
 
-            <h3>💡 Protocole d'Exécution — La Main de Dieu</h3>
-            <div class="scenario-box" id="ai-scenario">
-                <p><strong>1. Entrée :</strong> Implication des algorithmes d'intervention sur la zone d'équilibre (Discount).</p>
-                <p><strong>2. Gestion :</strong> Encaissement partiel au TP1 et passage immédiat du SL à Break-Even (sécurité maximale).</p>
-                <p><strong>3. Objectif Final :</strong> Poussée directionnelle vers le pool de liquidité supérieur (Buy-Side Liquidity).</p>
-            </div>
-
-            <p style="font-size: 0.72rem; color: var(--pivot-yellow); margin-top: 10px; text-align: center;">⚡ Modèle de succès "La main de Dieu" — Tactus SMC Engine.</p>
         </div>
 
-        <div class="footer">
-            Tactus SMC Engine v4.0 (Expert Edition)
+        <!-- Bannière Cookies discrète comme sur ton écran -->
+        <div class="cookie-banner">
+            <span>Ce site utilise des cookies uniquement pour l'authentification et le fonctionnement. Aucun cookie de traçage publicitaire. <a href="#" style="color: var(--neon-blue); text-decoration: none;">En savoir plus</a></span>
+            <button onclick="this.parentElement.style.display='none'">Accepter</button>
         </div>
+
     </div>
 
-    <script>
-        function analyserExpert(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e){
-                document.getElementById('image-preview').src = e.target.result;
-                
-                const previewBox = document.getElementById('preview-box');
-                previewBox.style.display = 'block';
-                document.getElementById('results-panel').style.display = 'block';
-                
-                document.getElementById('drop-text').textContent = "⚡ Calcul de l'algorithme institutionnel...";
-
-                setTimeout(() => {
-                    // Variation dynamique basée sur l'image pour s'adapter à toutes tes captures d'écran
-                    const seed = file.size % 200;
-                    const basePrice = (1.3500 + seed * 0.0001).toFixed(4);
-                    const pSL = (parseFloat(basePrice) - 0.0004).toFixed(4);
-                    const pTP1 = (parseFloat(basePrice) + 0.0004).toFixed(4);
-                    const pTP2 = (parseFloat(basePrice) + 0.0009).toFixed(4);
-                    const pTP3 = (parseFloat(basePrice) + 0.0015).toFixed(4);
-
-                    // Mise à jour de l'image (Tags graphiques)
-                    document.getElementById('box-sl').textContent = pSL;
-                    document.getElementById('tag-sl').textContent = "SL: " + pSL;
-                    document.getElementById('tag-tp1').textContent = "TP1: " + pTP1;
-                    document.getElementById('tag-tp2').textContent = "TP2: " + pTP2;
-                    document.getElementById('tag-tp3').textContent = "TP3: " + pTP3;
-
-                    // Mise à jour des niveaux textuels
-                    document.getElementById('val-sl').textContent = pSL;
-                    document.getElementById('val-tp1').textContent = pTP1;
-                    document.getElementById('val-tp2').textContent = pTP2;
-                    document.getElementById('val-tp3').textContent = pTP3;
-
-                    // Affichage instantané
-                    previewBox.classList.add('analyzed');
-                    document.getElementById('drop-text').textContent = "✅ Analyse institutionnelle validée";
-                }, 350);
-            };
-            reader.readAsDataURL(file);
-        }
-    </script>
 </body>
 </html>
+
 
 
